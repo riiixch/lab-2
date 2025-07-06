@@ -1,0 +1,39 @@
+POST api/todolist
+{
+    "title": 'Hello World',
+    "descript": 'Hello World Descript',
+    "completed": false,
+}
+
+PUT api/todolist/0
+{
+    "title": 'Hello Express',
+    "descript": 'Hello World Descript',
+    "completed": false,
+}
+
+DELETE api/todolist/0
+
+----------------------------
+
+ใช้ HTML CSS Bootstrap jQuery สร้างหน้าเว็บจัดการข้อมูล Stock ผ่าน API นี้
+
+export default interface Stock {
+    id: number;
+    product: string;
+    in_stock: number;
+    out_stock: number;
+}
+
+base url : http://localhost:3000
+
+GET /api/stock
+return { stock: Stock[] }
+POST /api/stock
+body { product: string, in_stock: number, out_stock: number }
+return { msg: string }
+PUT /api/stock/:sto_id
+body { product: string, in_stock: number, out_stock: number }
+return { msg: string }
+DELETE /api/stock/:sto_id
+return { msg: string }
