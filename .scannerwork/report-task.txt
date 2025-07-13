@@ -1,0 +1,7 @@
+organization=sompop
+projectKey=sompop_lab-2
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.65394
+dashboardUrl=https://sonarcloud.io/dashboard?id=sompop_lab-2
+ceTaskId=AZf9aLLviixIoi2UVPzz
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZf9aLLviixIoi2UVPzz

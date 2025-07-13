@@ -1,45 +1,50 @@
+import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { todolist } from "../../cache";
 
-import { ValidationSchema, validateInput } from "../../plugin/validator";
+import { validateInput, ValidationSchema } from "../../plugin/validator";
 
-export default function addTodolist(req: Request, res: Response) {
-    const scheme: ValidationSchema = {
-        title: {
-            type: 'string',
-            minLength: 1,
-            required: true,
-        },
-        descript: {
-            type: 'string',
-            minLength: 1,
-            required: true,
-        },
-        completed: {
-            type: 'boolean',
-            required: true,
-        },
-    };
+import getUserJWT from "../../function/getUserJWT";
 
-    const validate = validateInput(req.body, scheme);
+import { log } from "console";
 
-    if (!validate.success) {
-        res.status(400).json({ msg: validate.errorMsg });
-        return;
+export default async function addTodolist(req: Request, res: Response) {
+    const prisma = new PrismaClient();
+    try {
+        const userJWT = await getUserJWT(req);
+        if (!userJWT) {
+            res.status(400).json({ msg: 'กรุณาเข้าสู่ระบบ' });
+            return;
+        }
+
+        const schema: ValidationSchema = {
+            to_title: {
+                type: 'string',
+                minLength: 1,
+                displayName: 'ชื่อรายการ',
+                required: true,
+            }
+        }
+
+        const validate = validateInput(req.body, schema);
+        if (!validate.success) {
+            res.status(400).json({ msg: validate.errorMsg });
+            return;
+        }
+
+        const { to_title } = validate.data;
+
+        await prisma.todolist.create({
+            data: {
+                to_title: to_title,
+                user_id: userJWT.user_id,
+            }
+        })
+
+        res.status(200).json({ msg: "เพิ่ม Todolist " + to_title + " สำเร็จ" });
+    } catch (error) {
+        log("[Express] addTodolist Error : ", error);
+        res.status(400).json({ msg: "เพิ่ม Todolist ไม่สำเร็จ" });
+    } finally {
+        await prisma.$disconnect();
     }
-
-    let id = todolist.length;
-
-    const { title, descript, completed } = validate.data;
-
-    const newTodolist = {
-        id,
-        title,
-        descript,
-        completed,
-    };
-
-    todolist.push(newTodolist);
-
-    res.status(200).json({ msg: 'ข้อมูลถูกเพิ่มแล้ว' });
 }

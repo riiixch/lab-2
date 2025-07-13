@@ -1,12 +1,15 @@
 import express from "express";
 import cors from "cors";
 
-import hello from "./controller/hello";
-
 import todolistRouter from "./router/todolist";
-import stockRouter from "./router/stock";
+
+import authRouter from "./router/auth";
+import isLogin from "./middleware/isLogin";
+import todolistDetailRouter from "./router/todolist_detail";
 
 const app = express();
+
+//app.disable('x-powered-by');
 
 app.use(express.json());
 app.use(cors({
@@ -16,8 +19,9 @@ app.use(cors({
   credentials: true, // อนุญาตให้ส่ง cookies หรือ credentials
 }));
 
-app.get('/hello', hello);
-app.use('/api/todolist', todolistRouter);
-app.use('/api/stock', stockRouter);
+app.use('/api/auth', authRouter);
+
+app.use('/api/todolist', isLogin, todolistRouter);
+app.use('/api/todolistdetail', isLogin, todolistDetailRouter);
 
 export default app;
